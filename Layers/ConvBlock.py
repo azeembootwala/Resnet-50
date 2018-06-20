@@ -105,6 +105,11 @@ class ConvBlock(object):
         self.conv.session = session
         self.bn.session   = session
         self.session      = session
+    def get_params(self):
+        params = []
+        for layer in self.layers:
+            params += layer.get_params()
+        return params
 
 
 if __name__ =="__main__":
