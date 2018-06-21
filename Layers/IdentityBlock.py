@@ -47,7 +47,7 @@ class IdentityBlock:
         params = []
         for layer in self.layers:
             params+=layer.get_params()
-        return params
+        return paramsdd
 
 
 if __name__ == '__main__':
