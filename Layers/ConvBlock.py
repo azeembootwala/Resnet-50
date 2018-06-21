@@ -26,6 +26,12 @@ class ConvLayer(object):
     def get_params(self):
         return [self.W, self.b]
 
+    def copyFromKerasLayers(self,layer):
+        W , b = layer.get_weights()
+        op1 = self.W.assign(W)
+        op2 = self.b.assign(b)
+        self.session.run((op1,op2))
+
 
 class BatchNorm(object):
     def __init__(self, D):
@@ -43,6 +49,14 @@ class BatchNorm(object):
         return normalized
     def get_params(self):
         return [self.running_mean, self.running_variance, self.beta , self.gamma]
+
+    def copyFromKerasLayers(self,layer):
+        gamma , beta , running_mean , running_variance = layer.get_weights()
+        op1 = self.gamma.assign(gamma)
+        op2 = self.beta.assign(beta)
+        op3 = self.running_mean.assign(running_mean)
+        op4 = self.running_variance.assign(running_variance)
+        self.session.run((op1,op2,op3,op4))
 
 
 class ConvBlock(object):
@@ -110,6 +124,17 @@ class ConvBlock(object):
         for layer in self.layers:
             params += layer.get_params()
         return params
+
+    def copyFromKerasLayers(self, layers):
+        self.conv1.copyFromKerasLayers(layers[0])
+        self.bn1.copyFromKerasLayers(layers[1])
+        self.conv2.copyFromKerasLayers(layers[3])
+        self.bn2.copyFromKerasLayers(layers[4])
+        self.conv3.copyFromKerasLayers(layers[6])
+        self.bn3.copyFromKerasLayers(layers[8])
+        self.conv.copyFromKerasLayers(layers[7])
+        self.bn.copyFromKerasLayers(layers[9])
+
 
 
 if __name__ =="__main__":

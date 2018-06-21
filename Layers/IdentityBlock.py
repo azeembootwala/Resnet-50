@@ -49,6 +49,15 @@ class IdentityBlock:
             params+=layer.get_params()
         return params
 
+    def copyFromKerasLayers(self,layers):
+        assert(len(layers)==10)
+        self.conv1.copyFromKerasLayers(layers[0])
+        self.bn1.copyFromKerasLayers(layers[1])
+        self.conv2.copyFromKerasLayers(layers[3])
+        self.bn2.copyFromKerasLayers(layers[4])
+        self.conv3.copyFromKerasLayers(layers[6])
+        self.bn3.copyFromKerasLayers(layers[7])
+
 
 if __name__ == '__main__':
   identity_block = IdentityBlock(256,[64,64,256],1)
