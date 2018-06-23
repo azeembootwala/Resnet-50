@@ -13,15 +13,23 @@ from FirstLayers import ReLu , MaxPool
 
 
 
-class AveragePool(object):
-    def __init__(self,ksize):
-        self.ksize = ksize
+class GlobalAveragePool(object):
+    def __init__(self):
+        pass
+    """
+    Currently we use global average pooling  for varable image sizes so  this is not required
     def forward(self,X):
         out = tf.nn.avg_pool(X,
                             ksize=[1,self.ksize,self.ksize,1],
                             strides=[1,1,1,1],
                             padding="VALID")
         return out
+    """
+
+    def forward(self, X):
+
+        return tf.reduce_mean(X,axis=(1,2),keepdims =True)
+
     def get_params(self):
         return []
 
@@ -80,10 +88,13 @@ class ResNet(object):
         self.identityb11 = IdentityBlock(mi = 2048, fm_sizes=[512,512,2048])
         self.identityb12 = IdentityBlock(mi = 2048, fm_sizes=[512,512,2048])
         # Add average pool layers
-        self.avgpool = AveragePool(ksize=7)
+        self.avgpool = GlobalAveragePool()
         self.flatten = Flatten()
         # this will change for retrieval pay attention to sizes
-        self.dense = DenseLayer(mi=2048,mo = 1000)
+        self.dense1 = DenseLayer(mi=2048,mo = 1000)
+
+        # For retrieval
+        self.dense2 = DenseLayer(mi=1000, mo = 128)
 
         self.layers = [self.conv , self.bn , self.relu, self.maxpool,
                        self.convb1, self.identityb1 , self.identityb2,
@@ -91,10 +102,11 @@ class ResNet(object):
                        self.convb3, self.identityb6 , self.identityb7 , self.identityb8,
                                     self.identityb9,self.identityb10,
                         self.convb4 , self.identityb11 , self.identityb12,
-                        self.avgpool,self.flatten,self.dense]
-        # shape will change coz of different sizes
-        self.input = tf.placeholder(tf.float32,shape=(None,224,224,3))
-        self.output= self.forward(self.input)
+                        self.avgpool,self.flatten,self.dense1,self.relu,self.dense2]
+
+        self.input = tf.placeholder(tf.float32, shape=(None,400,400,3))
+        self.output = self.forward(self.input)
+
 
     def copyFromKerasLayers(self, layers):
          self.conv.copyFromKerasLayers(layers[1])
@@ -115,7 +127,7 @@ class ResNet(object):
          self.convb4.copyFromKerasLayers(layers[141:153])
          self.identityb11.copyFromKerasLayers(layers[153:163])
          self.identityb12.copyFromKerasLayers(layers[163:173])
-         self.dense.copyFromKerasLayers(layers[175])
+         self.dense1.copyFromKerasLayers(layers[175])
 
     def forward(self,X):
         for layer in self.layers:
@@ -164,6 +176,7 @@ if __name__ == "__main__":
     print(partial_model.summary())
 
     # create an instance of our own model
+
     my_partial_resnet = ResNet()
 
     # make a fake image
@@ -179,6 +192,7 @@ if __name__ == "__main__":
 
     # note: starting a new session messes up the Keras model
     session = keras.backend.get_session()
+
     my_partial_resnet.set_session(session)
     session.run(init)
 
@@ -187,6 +201,7 @@ if __name__ == "__main__":
     print("first_output.shape:", first_output.shape)
 
     # copy params from Keras model
+    # Transfer all the keras weights to our Variables
     my_partial_resnet.copyFromKerasLayers(partial_model.layers)
 
     # compare the 2 models
