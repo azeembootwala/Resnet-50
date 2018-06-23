@@ -3,13 +3,13 @@ import tensorflow as tf
 from ConvBlock import ConvLayer, BatchNorm
 
 
-class IdentityBlock:
-    def __init__(self,mi,fm_sizes,stride=2):
+class IdentityBlock(object):
+    def __init__(self,mi,fm_sizes):
         self.session = None
         assert(len(fm_sizes)==3)
         self.relu = tf.nn.relu
         # Filling object list for Identity Block
-        self.conv1 = ConvLayer(1,mi,fm_sizes[0],stride)
+        self.conv1 = ConvLayer(1,mi,fm_sizes[0],1)
         self.bn1   = BatchNorm(fm_sizes[0])
         self.conv2 = ConvLayer(3,fm_sizes[0],fm_sizes[1],1,padding="SAME")
         self.bn2   = BatchNorm(fm_sizes[1])
@@ -20,8 +20,9 @@ class IdentityBlock:
                        self.conv2 , self.bn2,
                        self.conv3 , self.bn3]
 
-        self.input = tf.placeholder(tf.float32,shape=(None,224,224,mi))
-        self.output= self.forward(self.input)
+
+        #self.input = tf.placeholder(tf.float32,shape=(None,224,224,mi))
+        #self.output= self.forward(self.input)
 
 
     def forward(self,X):

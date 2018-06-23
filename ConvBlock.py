@@ -89,8 +89,8 @@ class ConvBlock(object):
                        self.conv3 , self.bn3]
 
         # will only be used when file is called directly
-        self.input = tf.placeholder(tf.float32,shape=(None, 400, 400,mi))
-        self.output = self.forward(self.input)
+        #self.input = tf.placeholder(tf.float32,shape=(None, 400, 400,mi))
+        #self.output = self.forward(self.input)
 
 
     def forward(self,X):
