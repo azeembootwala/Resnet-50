@@ -104,8 +104,9 @@ class ResNet(object):
                         self.convb4 , self.identityb11 , self.identityb12,
                         self.avgpool,self.flatten,self.dense1,self.relu,self.dense2]
 
-        self.input = tf.placeholder(tf.float32, shape=(None,400,400,3))
-        self.output = self.forward(self.input)
+        #self.input = tf.placeholder(tf.float32, shape=(None,400,400,3))
+        #self.labels = tf.placeholder(tf.float32, shape=(None,))
+        #self.output = self.forward(self.input)
 
 
     def copyFromKerasLayers(self, layers):
